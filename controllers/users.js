@@ -19,7 +19,7 @@ module.exports.getUserById = (req, res) => {
       }
 
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Invalid user id passed' });
+        res.status(400).send({ message: 'Invalid user id passed' });
         return;
       }
 
