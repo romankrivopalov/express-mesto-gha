@@ -7,14 +7,11 @@ const { PORT = 3000 } = process.env;
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb://localhost:27017/mestodb', {});
 
-app.use((request, response, next) => {
-  request.user = {
-    _id: '644e44a23b09782035f1d992',
+app.use((req, res, next) => {
+  req.user = {
+    _id: '644e4c99a650b328637be6c0',
   };
 
   next();

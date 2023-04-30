@@ -10,8 +10,21 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { id } = req.params;
   userSchema.findById(id)
+    .orFail()
     .then((user) => res.send(user))
-    .catch(res.status(404).send({ message: `User Id: ${id} is not found` }));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: `User Id: ${id} is not found` });
+        return;
+      }
+
+      if (err.name === 'CastError') {
+        res.status(404).send({ message: 'Invalid user id passed' });
+        return;
+      }
+
+      res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.postUsers = (req, res) => {
