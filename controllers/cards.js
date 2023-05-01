@@ -9,13 +9,21 @@ module.exports.getCards = (req, res) => {
 
 module.exports.postCard = (req, res) => {
   const { name, link } = req.body;
-  console.log(req.params);
-  console.log(req.body);
 
   cardSchema
     .create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res
+          .status(400)
+          .send({ message: 'Invalid data when post card' });
+
+        return;
+      }
+
+      res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -26,13 +34,19 @@ module.exports.deleteCard = (req, res) => {
     .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: `Card Id: ${id} is not found` });
+      if (err.name === 'CastError') {
+        res
+          .status(400)
+          .send({ message: 'Invalid card id passed' });
+
         return;
       }
 
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Invalid card id passed' });
+      if (err.name === 'DocumentNotFoundError') {
+        res
+          .status(404)
+          .send({ message: `Card Id: ${id} is not found` });
+
         return;
       }
 
@@ -46,8 +60,28 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        res
+          .status(404)
+          .send({ message: `Card Id: ${req.user._id} is not found` });
+
+        return;
+      }
+
+      res.send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res
+          .status(400)
+          .send({ message: 'Invalid data when like card' });
+
+        return;
+      }
+
+      res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.removeLikeCard = (req, res) => {
@@ -57,5 +91,15 @@ module.exports.removeLikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res
+          .status(400)
+          .send({ message: 'Invalid data when delete card like' });
+
+        return;
+      }
+
+      res.status(500).send({ message: err.message });
+    });
 };
