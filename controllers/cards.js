@@ -32,7 +32,7 @@ module.exports.deleteCard = (req, res) => {
   cardSchema
     .findByIdAndRemove(id)
     .orFail()
-    .then((card) => res.send(card))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         res
