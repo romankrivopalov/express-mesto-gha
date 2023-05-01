@@ -90,7 +90,16 @@ module.exports.removeLikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (!card) {
+        return res
+          .status(404)
+          .send({ message: `Card Id: ${req.user._id} is not found` });
+      }
+
+      return res.status(200)
+        .send(card);
+    })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res
