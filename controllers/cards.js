@@ -39,3 +39,23 @@ module.exports.deleteCard = (req, res) => {
       res.status(500).send({ message: err.message });
     });
 };
+
+module.exports.likeCard = (req, res) => {
+  cardSchema.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => res.send(card))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.removeLikeCard = (req, res) => {
+  cardSchema.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => res.send(card))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
