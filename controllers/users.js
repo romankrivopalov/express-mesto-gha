@@ -34,3 +34,12 @@ module.exports.postUsers = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+module.exports.updateUser = (req, res) => {
+  const { name, about } = req.body;
+  console.log(req.user);
+
+  userSchema.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .then((user) => res.send(user))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
