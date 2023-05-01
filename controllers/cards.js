@@ -1,10 +1,16 @@
 const cardSchema = require('../models/card');
+const {
+  errCodeInvalidData,
+  errCodeNotFound,
+  errCodeDefault,
+  dafaultErrorMessage,
+} = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   cardSchema
     .find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(errCodeDefault).send({ message: dafaultErrorMessage }));
 };
 
 module.exports.postCard = (req, res) => {
@@ -16,13 +22,15 @@ module.exports.postCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid data when post card' });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
 
@@ -36,7 +44,7 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid card id passed' });
 
         return;
@@ -44,13 +52,15 @@ module.exports.deleteCard = (req, res) => {
 
       if (err.name === 'DocumentNotFoundError') {
         res
-          .status(404)
+          .status(errCodeNotFound)
           .send({ message: `Card Id: ${cardId} is not found` });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
 
@@ -63,7 +73,7 @@ module.exports.likeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res
-          .status(404)
+          .status(errCodeNotFound)
           .send({ message: `Card Id: ${req.user._id} is not found` });
 
         return;
@@ -74,13 +84,15 @@ module.exports.likeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid data when like card' });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
 
@@ -93,7 +105,7 @@ module.exports.removeLikeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         return res
-          .status(404)
+          .status(errCodeNotFound)
           .send({ message: `Card Id: ${req.user._id} is not found` });
       }
 
@@ -103,12 +115,14 @@ module.exports.removeLikeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid data when delete card like' });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };

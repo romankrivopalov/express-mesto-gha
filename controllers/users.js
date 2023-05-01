@@ -1,10 +1,16 @@
 const userSchema = require('../models/user');
+const {
+  errCodeInvalidData,
+  errCodeNotFound,
+  errCodeDefault,
+  dafaultErrorMessage,
+} = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   userSchema
     .find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(errCodeDefault).send({ message: dafaultErrorMessage }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -15,7 +21,7 @@ module.exports.getUserById = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid data when get user' });
 
         return;
@@ -23,13 +29,15 @@ module.exports.getUserById = (req, res) => {
 
       if (err.name === 'DocumentNotFoundError') {
         res
-          .status(404)
+          .status(errCodeNotFound)
           .send({ message: `User Id: ${id} is not found` });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
 
@@ -41,13 +49,15 @@ module.exports.postUsers = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid data when post user' });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
 
@@ -59,13 +69,15 @@ module.exports.updateUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid user id passed' });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
 
@@ -77,7 +89,7 @@ module.exports.updateUserAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(400)
+          .status(errCodeInvalidData)
           .send({ message: 'Invalid user id passed' });
 
         return;
@@ -85,12 +97,14 @@ module.exports.updateUserAvatar = (req, res) => {
 
       if (err.name === 'DocumentNotFoundError') {
         res
-          .status(404)
+          .status(errCodeNotFound)
           .send({ message: `User Id: ${req.user._id} is not found` });
 
         return;
       }
 
-      res.status(500).send({ message: err.message });
+      res
+        .status(errCodeDefault)
+        .send({ message: dafaultErrorMessage });
     });
 };
