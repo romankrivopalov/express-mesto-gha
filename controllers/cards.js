@@ -74,7 +74,7 @@ module.exports.likeCard = (req, res) => {
       if (!card) {
         res
           .status(errCodeNotFound)
-          .send({ message: `Card Id: ${req.user._id} is not found` });
+          .send({ message: `Card Id: ${req.params.cardId} is not found` });
 
         return;
       }
@@ -106,7 +106,7 @@ module.exports.removeLikeCard = (req, res) => {
       if (!card) {
         return res
           .status(errCodeNotFound)
-          .send({ message: `Card Id: ${req.user._id} is not found` });
+          .send({ message: `Card Id: ${req.params.cardId} is not found` });
       }
 
       return res.status(200)
