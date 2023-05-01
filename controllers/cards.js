@@ -45,7 +45,7 @@ module.exports.deleteCard = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res
           .status(404)
-          .send({ message: `Card Id: ${id} is not found` });
+          .send({ message: `Card Id: ${cardId} is not found` });
 
         return;
       }
