@@ -27,10 +27,10 @@ module.exports.postCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { id } = req.params;
+  const { cardId } = req.params;
 
   cardSchema
-    .findByIdAndRemove(id)
+    .findByIdAndRemove(cardId)
     .orFail()
     .then((card) => res.status(200).send(card))
     .catch((err) => {
