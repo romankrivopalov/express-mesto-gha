@@ -13,6 +13,14 @@ module.exports.getUserById = (req, res) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
+      if (err.name === 'CastError') {
+        res
+          .status(400)
+          .send({ message: 'Invalid data when get user' });
+
+        return;
+      }
+
       if (err.name === 'DocumentNotFoundError') {
         res
           .status(404)
