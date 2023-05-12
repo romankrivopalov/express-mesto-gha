@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const userSchema = require('../models/user');
 const {
   errCodeInvalidData,
@@ -41,12 +42,36 @@ module.exports.getUserById = (req, res) => {
     });
 };
 
-module.exports.postUsers = (req, res) => {
-  const { name, about, avatar } = req.body;
+module.exports.createUser = (req, res) => {
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
 
-  userSchema.create({ name, about, avatar })
-    .then((user) => res.send(user))
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => userSchema.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      const userObj = user.toObject();
+      delete userObj.password;
+      res.status(201).send(userObj);
+    })
     .catch((err) => {
+      if (err.code === 11000) {
+        console.log(11);
+
+        return;
+      }
+
       if (err.name === 'ValidationError') {
         res
           .status(errCodeInvalidData)
