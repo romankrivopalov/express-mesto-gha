@@ -13,7 +13,7 @@ module.exports.getCards = (req, res) => {
     .catch(() => res.status(errCodeDefault).send({ message: dafaultErrorMessage }));
 };
 
-module.exports.postCard = (req, res) => {
+module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   cardSchema
