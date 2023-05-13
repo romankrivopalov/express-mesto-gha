@@ -42,8 +42,16 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserById = (req, res) => {
-  const { id } = req.params;
-  userSchema.findById(id)
+  let userId;
+
+  if (req.params.id) {
+    userId = req.params.id;
+  } else {
+    userId = req.user._id;
+  }
+
+  userSchema
+    .findById(userId)
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -58,7 +66,7 @@ module.exports.getUserById = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res
           .status(errCodeNotFound)
-          .send({ message: `User Id: ${id} is not found` });
+          .send({ message: `User Id: ${userId} is not found` });
 
         return;
       }
