@@ -20,14 +20,6 @@ app.use(express.json());
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {});
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '644e6fb50fc66ed5089a9f08',
-  };
-
-  next();
-});
-
 app.use(router);
 
 app.listen(PORT, () => {
