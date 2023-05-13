@@ -9,19 +9,19 @@ const validateCreateCard = celebrate({
 });
 
 const validateDeleteCard = celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),
   }),
 });
 
 const validateLikeCard = celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),
   }),
 });
 
 const validateRemoveLikeCard = celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),
   }),
 });
