@@ -102,20 +102,18 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        console.log(11);
-
-        return;
+        return res
+          .status(402)
+          .send({ message: 'A user with such a email is already registered' });
       }
 
       if (err.name === 'ValidationError') {
-        res
+        return res
           .status(errCodeInvalidData)
           .send({ message: 'Invalid data when post user' });
-
-        return;
       }
 
-      res
+      return res
         .status(errCodeDefault)
         .send({ message: dafaultErrorMessage });
     });
