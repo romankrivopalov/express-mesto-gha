@@ -38,8 +38,15 @@ module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
   cardSchema
-    .findByIdAndRemove(cardId)
+    .findById(cardId)
     .orFail()
+    .then((card) => {
+      if (card.owner !== req.user._id) {
+        return Promise.reject(new Error("You can't delete someone else's card"));
+      }
+
+      return cardSchema.findByIdAndRemove(cardId);
+    })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
