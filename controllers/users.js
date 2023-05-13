@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const userSchema = require('../models/user');
 const {
   errCodeInvalidData,
@@ -7,11 +8,37 @@ const {
   dafaultErrorMessage,
 } = require('../utils/constants');
 
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return userSchema
+    .findOne({ email })
+    .select('+password')
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error('Неправильные почта или пароль'));
+          }
+
+          const token = jwt.sign({ _id: user._id }, 'secret-person-key', { expiresIn: '7d' });
+          res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true, sameSite: true });
+
+          return res.status(200).send({ token });
+        });
+    })
+    .catch(() => res.status(errCodeDefault).send({ message: 'Неправильные почта или пароль' }));
+};
+
 module.exports.getUsers = (req, res) => {
   userSchema
     .find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(errCodeDefault).send({ message: dafaultErrorMessage }));
+    .catch(() => res.status(401).send({ message: dafaultErrorMessage }));
 };
 
 module.exports.getUserById = (req, res) => {
