@@ -53,7 +53,7 @@ module.exports.getUserById = (req, res, next) => {
   userSchema
     .findById(userId)
     .orFail()
-    .then((user) => res.send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new NotFoundError('Invalid data when get user'));
