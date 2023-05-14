@@ -36,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        return Promise.reject(new ForbiddenError("You can't delete someone else's card"));
+        return next(new ForbiddenError("You can't delete someone else's card"));
       }
 
       return cardSchema.findByIdAndRemove(cardId);
