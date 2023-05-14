@@ -13,7 +13,7 @@ const validateCreateUser = celebrate({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
     name: Joi.string().min(2).max(40),
-    about: Joi.string().min(2).max(200),
+    about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(urlPattern),
   }),
 });

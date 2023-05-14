@@ -120,7 +120,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   userSchema.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send(user))
+    .then((user) => res.status(200).send(user.avatar))
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new NotFoundError('Invalid user id passed'));
