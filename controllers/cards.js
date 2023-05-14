@@ -43,16 +43,7 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .then((card) => cardSchema.deleteOne(card))
     .then(() => res.status(200).send({ message: 'Card deleted' }))
-    .catch((err) => {
-      if (err instanceof BadRequestError) {
-        return next(err);
-      }
-      if (err instanceof BadRequestError) {
-        return next(new ForbiddenError('Invalid data when post card'));
-      }
-
-      return next(err);
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
