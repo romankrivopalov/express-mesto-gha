@@ -5,14 +5,14 @@ const { validateToken } = require('../middlewares/auth');
 const { login, createUser } = require('../controllers/users');
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
-const { NotFoundError } = require('../utils/error/index');
+const { BadRequestError } = require('../utils/error/index');
 
 router.post('/signin', validateLogin, login);
 router.post('/signup', validateCreateUser, createUser);
 
 router.use('/users', validateToken, usersRouter);
 router.use('/cards', validateToken, cardsRouter);
-router.use('/*', (req, res, next) => next(new NotFoundError('This page not found')));
+router.use('/*', (req, res, next) => next(new BadRequestError('This page not found')));
 router.use(errors());
 
 module.exports = router;
