@@ -47,8 +47,8 @@ module.exports.deleteCard = (req, res, next) => {
       if (err instanceof BadRequestError) {
         return next(err);
       }
-      if (err.name === 'CastError') {
-        return next(new NotFoundError('Invalid data when post card'));
+      if (err instanceof BadRequestError) {
+        return next(new ForbiddenError('Invalid data when post card'));
       }
 
       return next(err);
