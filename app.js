@@ -2,9 +2,9 @@ const express = require('express');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const router = require('./routes');
 const handleError = require('./middlewares/handleError');
-const cookieParser = require('cookie-parser');
 const { limiterSetting } = require('./utils/constants');
 
 const app = express();
