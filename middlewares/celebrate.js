@@ -19,7 +19,7 @@ const validateCreateUser = celebrate({
 });
 
 const validateUserAvatar = celebrate({
-  params: Joi.object().keys({
+  body: Joi.object().keys({
     avatar: Joi.string().required().regex(urlPattern),
   }),
 });
