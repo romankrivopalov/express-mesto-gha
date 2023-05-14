@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const { urlPattern } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,6 +21,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (url) => urlPattern.test(url),
+      message: 'Wrong link format',
+    },
   },
   email: {
     type: String,
@@ -27,7 +32,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: (email) => validator.isEmail(email),
-      message: 'Неправильный формат почты',
+      message: 'Wrong email format',
     },
   },
   password: {
