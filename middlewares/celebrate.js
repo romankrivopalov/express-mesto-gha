@@ -1,6 +1,8 @@
 const { celebrate, Joi } = require('celebrate');
 const { urlPattern } = require('../utils/constants');
 
+const cardJoiIdTemplate = { cardId: Joi.string().length(24).hex().required() };
+
 const validateLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -45,21 +47,15 @@ const validateCreateCard = celebrate({
 });
 
 const validateDeleteCard = celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().length(24).hex().required(),
-  }),
+  params: Joi.object().keys(cardJoiIdTemplate),
 });
 
 const validateLikeCard = celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
-  }),
+  params: Joi.object().keys(cardJoiIdTemplate),
 });
 
 const validateRemoveLikeCard = celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
-  }),
+  params: Joi.object().keys(cardJoiIdTemplate),
 });
 
 module.exports = {
