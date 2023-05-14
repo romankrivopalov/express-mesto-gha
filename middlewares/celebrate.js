@@ -33,7 +33,7 @@ const validateUserId = celebrate({
 const validateUpdateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(40),
-    about: Joi.string().required().min(2).max(200),
+    about: Joi.string().required().min(2).max(30),
   }),
 });
 
