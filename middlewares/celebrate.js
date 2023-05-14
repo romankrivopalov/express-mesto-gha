@@ -1,6 +1,25 @@
 const { celebrate, Joi } = require('celebrate');
 const { urlPattern } = require('../utils/constants');
 
+const validateUserAvatar = celebrate({
+  params: Joi.object().keys({
+    avatar: Joi.string().required().regex(urlPattern),
+  }),
+});
+
+const validateUserId = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().alphanum().length(24),
+  }),
+});
+
+const validateUpdateUser = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+  }),
+});
+
 const validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
@@ -27,6 +46,9 @@ const validateRemoveLikeCard = celebrate({
 });
 
 module.exports = {
+  validateUserAvatar,
+  validateUserId,
+  validateUpdateUser,
   validateCreateCard,
   validateDeleteCard,
   validateLikeCard,
