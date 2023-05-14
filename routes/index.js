@@ -12,7 +12,7 @@ router.post('/signup', validateCreateUser, createUser);
 
 router.use('/users', validateToken, usersRouter);
 router.use('/cards', validateToken, cardsRouter);
-router.use('/*', (req, res, next) => next(new BadRequestError('This page not found')));
+router.use('/*', validateToken, (req, res, next) => next(new BadRequestError('This page not found')));
 router.use(errors());
 
 module.exports = router;
