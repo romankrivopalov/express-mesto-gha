@@ -1,16 +1,16 @@
 const jwt = require('jsonwebtoken');
 const { UnathorizedError } = require('../utils/error');
 
-const extractBearerToken = (header) => header.replace('Bearer ', '');
+// const extractBearerToken = (header) => header.replace('Bearer ', '');
 
 module.exports.validateToken = (req, res, next) => {
-  const { authorization } = req.headers;
+  // const { authorization } = req.headers;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new UnathorizedError('Authorization required'));
-  }
+  // if (!authorization || !authorization.startsWith('Bearer ')) {
+  //   return next(new UnathorizedError('Authorization required'));
+  // }
 
-  const token = extractBearerToken(authorization);
+  const token = req.cookies.jwt;
   let payload;
 
   try {

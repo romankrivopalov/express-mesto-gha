@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const router = require('./routes');
 const handleError = require('./middlewares/handleError');
+const cookieParser = require('cookie-parser');
 const { limiterSetting } = require('./utils/constants');
 
 const app = express();
@@ -13,6 +14,7 @@ const limiter = rateLimit(limiterSetting);
 app.use(limiter);
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {});
 
