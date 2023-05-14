@@ -2,13 +2,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userSchema = require('../models/user');
 const {
-  errCodeInvalidData,
-  errCodeNotFound,
-  errCodeDefault,
-  dafaultErrorMessage,
-} = require('../utils/constants');
+  NotFoundError,
+  BadRequestError,
+  ConflictError,
+} = require('../utils/error');
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return userSchema
@@ -31,17 +30,17 @@ module.exports.login = (req, res) => {
           return res.status(200).send({ token });
         });
     })
-    .catch(() => res.status(errCodeDefault).send({ message: 'Неправильные почта или пароль' }));
+    .catch(next);
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   userSchema
     .find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(401).send({ message: dafaultErrorMessage }));
+    .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   let userId;
 
   if (req.params.id) {
@@ -56,28 +55,18 @@ module.exports.getUserById = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(errCodeInvalidData)
-          .send({ message: 'Invalid data when get user' });
-
-        return;
+        return next(new NotFoundError('Invalid data when get user'));
       }
 
       if (err.name === 'DocumentNotFoundError') {
-        res
-          .status(errCodeNotFound)
-          .send({ message: `User Id: ${userId} is not found` });
-
-        return;
+        return next(new BadRequestError(`User Id: ${userId} is not found`));
       }
 
-      res
-        .status(errCodeDefault)
-        .send({ message: dafaultErrorMessage });
+      return next(res);
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -102,67 +91,45 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res
-          .status(402)
-          .send({ message: 'A user with such a email is already registered' });
+        return next(new ConflictError('A user with such a email is already registered'));
       }
 
       if (err.name === 'ValidationError') {
-        return res
-          .status(errCodeInvalidData)
-          .send({ message: 'Invalid data when post user' });
+        return next(new NotFoundError('Invalid data when post user'));
       }
 
-      return res
-        .status(errCodeDefault)
-        .send({ message: dafaultErrorMessage });
+      return next(err);
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   userSchema.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res
-          .status(errCodeInvalidData)
-          .send({ message: 'Invalid user id passed' });
-
-        return;
+        return next(new NotFoundError('Invalid user id passed'));
       }
 
-      res
-        .status(errCodeDefault)
-        .send({ message: dafaultErrorMessage });
+      return next(err);
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   userSchema.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(errCodeInvalidData)
-          .send({ message: 'Invalid user id passed' });
-
-        return;
+        return next(new NotFoundError('Invalid user id passed'));
       }
 
       if (err.name === 'DocumentNotFoundError') {
-        res
-          .status(errCodeNotFound)
-          .send({ message: `User Id: ${req.user._id} is not found` });
-
-        return;
+        return next(new BadRequestError(`User Id: ${req.user._id} is not found`));
       }
 
-      res
-        .status(errCodeDefault)
-        .send({ message: dafaultErrorMessage });
+      return next(err);
     });
 };
