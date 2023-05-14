@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const userSchema = require('../models/user');
 const {
   NotFoundError,
+  UnathorizedError,
   BadRequestError,
   ConflictError,
 } = require('../utils/error');
@@ -15,13 +16,13 @@ module.exports.login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return next(new UnathorizedError('incorrect email or password'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return next(new UnathorizedError('incorrect email or password'));
           }
 
           const token = jwt.sign({ _id: user._id }, 'secret-person-key', { expiresIn: '7d' });
