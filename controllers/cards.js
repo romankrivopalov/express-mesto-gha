@@ -33,22 +33,22 @@ module.exports.deleteCard = (req, res, next) => {
 
   cardSchema
     .findById(cardId)
-    .orFail()
+    .orFail(new BadRequestError(`Card Id: ${cardId} is not found`))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         return next(new ForbiddenError("You can't delete someone else's card"));
       }
 
-      return cardSchema.findByIdAndRemove(cardId);
+      return card;
     })
-    .then((card) => res.status(200).send(card))
+    .then((card) => cardSchema.deleteOne(card))
+    .then(() => res.status(200).send({ message: 'Card deleted' }))
     .catch((err) => {
+      if (err instanceof BadRequestError) {
+        return next(err);
+      }
       if (err.name === 'CastError') {
         return next(new NotFoundError('Invalid data when post card'));
-      }
-
-      if (err.name === 'DocumentNotFoundError') {
-        return next(new BadRequestError(`Card Id: ${cardId} is not found`));
       }
 
       return next(err);
