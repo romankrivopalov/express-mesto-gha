@@ -2,6 +2,7 @@ const cardSchema = require('../models/card');
 
 const {
   NotFoundError,
+  ForbiddenError,
   BadRequestError,
 } = require('../utils/error');
 
@@ -35,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        return Promise.reject(new Error("You can't delete someone else's card"));
+        return Promise.reject(new ForbiddenError("You can't delete someone else's card"));
       }
 
       return cardSchema.findByIdAndRemove(cardId);
