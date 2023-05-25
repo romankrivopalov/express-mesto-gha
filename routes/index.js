@@ -2,13 +2,16 @@ const router = require('express').Router();
 const { errors } = require('celebrate');
 const { validateLogin, validateCreateUser } = require('../middlewares/celebrate');
 const { validateToken } = require('../middlewares/auth');
-const { login, createUser } = require('../controllers/users');
+const { login, createUser, logout } = require('../controllers/users');
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 const { BadRequestError } = require('../utils/error/index');
 
 router.post('/signin', validateLogin, login);
 router.post('/signup', validateCreateUser, createUser);
+router.get('/signout', (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Exit' });
+});
 
 router.use('/users', validateToken, usersRouter);
 router.use('/cards', validateToken, cardsRouter);
